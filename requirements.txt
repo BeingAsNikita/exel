@@ -1,0 +1,12 @@
+WEBPACK (import/exports)
+    -babel
+    -scss
+    -ESLint
+    -2 Modes:
+        -1 Dev mod:
+            Dev Server, SourceMaps, ESLint, Not Minified Code
+        -2 Prod:
+            Minified COde
+            
+
+GIT
