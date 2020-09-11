@@ -6,7 +6,7 @@ import { Table } from './components/table/Table';
 import { Toolbar } from './components/toolbar/Toolbar';
 
 const excel = new Excel('#app', {
-  components: [Header, Formula, Table, Toolbar],
+  components: [Header, Toolbar, Formula, Table],
 });
 
 
