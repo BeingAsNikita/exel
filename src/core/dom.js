@@ -33,8 +33,17 @@ class Dom {
     if (Element.prototype.append) {
       this.$el.append(node);
     } else {
-      this.$el.append(node);
+      this.$el.appendChild(node);
     }
+    return this;
+  }
+
+  closest(selector) {
+    return $(this.$el.closest(selector));
+  }
+
+  getCoords() {
+    return this.$el.getBoundingClientRect();
   }
 }
 
