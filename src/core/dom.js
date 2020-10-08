@@ -45,6 +45,10 @@ class Dom {
   getCoords() {
     return this.$el.getBoundingClientRect();
   }
+
+  getAllCell(selectors) {
+    return document.querySelectorAll(selectors);
+  }
 }
 
 export function $(selector) {
