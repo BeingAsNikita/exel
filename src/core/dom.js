@@ -53,12 +53,28 @@ class Dom {
     return this.$el.querySelectorAll(selector);
   }
 
+  focus() {
+    this.$el.focus();
+    return this;
+  }
+
   addClass(className) {
     this.$el.classList.add(className);
   }
 
   removeClass(className) {
     this.$el.classList.remove(className);
+  }
+
+  text(text) {
+    if (typeof text === 'string') {
+      this.$el.textContent = text;
+      return this;
+    }
+    if (this.$el.tagName.toLowerCase() === 'input') {
+      return this.$el.value.trim();
+    }
+    return this.$el.textContent.trim();
   }
 
   css(styles = {}) {
