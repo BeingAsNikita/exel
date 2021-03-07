@@ -4,7 +4,7 @@ export function resizeHandler($root, event) {
   const target = event.target.dataset.resize;
   const $resizer = $(event.target);
   const $parent = $resizer.closest('[data-type="resizable"]');
-  const $key = $parent.$el.dataset.key;
+  const $key = $parent.$el.dataset.col;
   const coords = $parent.getCoords();
   const sideProp = target === 'col' ? 'bottom' : 'right';
   let value;
@@ -15,7 +15,6 @@ export function resizeHandler($root, event) {
   });
 
   document.onmousemove = (e) => {
-    console.log('move');
     const delta = target === 'col'
       ? e.pageX - coords.right
       : e.pageY - coords.bottom;
@@ -35,7 +34,7 @@ export function resizeHandler($root, event) {
     document.onmousemove = null;
 
     if (target === 'col') {
-      $root.findAll(`[data-key="${$key}"]`)
+      $root.findAll(`[data-col="${$key}"]`)
           .forEach((child) => $(child).css({ width: `${value}px` }));
     } else {
       $parent.css({ height: `${value}px` });

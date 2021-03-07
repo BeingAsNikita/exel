@@ -1,7 +1,9 @@
+import { $ } from '../../core/dom';
 import { ExcelComponent } from '../../core/ExcelComponent';
-import { shouldResize } from './table.functions';
+import { shouldResize, isCell, matrix } from './table.functions';
 import { resizeHandler } from './table.resize';
 import { createTable } from './table.template';
+import { TableSelection } from './TableSelection';
 
 export class Table extends ExcelComponent {
   static className = 'excel__table';
@@ -9,31 +11,36 @@ export class Table extends ExcelComponent {
   constructor($root) {
     super($root, {
       name: 'Table',
-      listeners: ['click', 'mousedown', 'mousemove', 'mouseup'],
+      listeners: ['mousedown'],
     });
-    this.elCoordinate = {
-      start: 0,
-      end: 0,
-    };
-    this.currentResizeElement = null;
   }
   toHTML() {
     return createTable(20);
   }
 
-  onClick() {
+  init() {
+    super.init();
+    this.selection = new TableSelection();
 
+    const $cell = this.$root.find('[data-id="0:0"]');
+    this.selection.select($cell);
   }
 
   onMousedown(event) {
     if (shouldResize(event)) {
       resizeHandler(this.$root, event);
+    } else if (isCell(event)) {
+      const $target = $(event.target);
+      if (event.shiftKey) {
+        const target = $target.id(true);
+        const current = this.selection.current.id(true);
+        const cells = matrix(current, target)
+            .map((id) => this.$root.find(`[data-id="${id}"]`));
+        this.selection.selectGroup(cells);
+      } else {
+        this.selection.select($target);
+      }
     }
   }
-
-  onMousemove() {
-  }
-
-  onMouseup() {
-  }
 }
+
