@@ -1,5 +1,7 @@
 import { $ } from '../../core/dom';
 import { ExcelComponent } from '../../core/ExcelComponent';
+import * as actions from '../../store/actions';
+import { TABLE_RESIZE } from '../../store/types';
 import { shouldResize, isCell, matrix, getNextCell } from './table.functions';
 import { resizeHandler } from './table.resize';
 import { createTable } from './table.template';
@@ -14,9 +16,14 @@ export class Table extends ExcelComponent {
       listeners: ['mousedown', 'keydown', 'click', 'input'],
       ...options,
     });
+    this.prepare();
   }
   toHTML() {
-    return createTable(20);
+    return createTable(20, this.store.getState());
+  }
+
+  prepare() {
+    this.selection = new TableSelection();
   }
 
   selectCell(cell) {
@@ -26,23 +33,36 @@ export class Table extends ExcelComponent {
 
   init() {
     super.init();
-    this.selection = new TableSelection();
     const $cell = this.$root.find('[data-id="0:0"]');
 
     this.selectCell($cell);
 
     this.$on('formula:input', (text) => {
       this.selection.current.text(text);
+      this.updateTextInSore(text);
     });
 
     this.$on('formula:done', () => {
       this.selection.current.focus();
     });
+
+  /*     this.$subscribe((state) => {
+    }); */
+  }
+
+
+  async resizeTable(event) {
+    try {
+      const data = await resizeHandler(this.$root, event);
+      this.$dispatch(actions.resize(TABLE_RESIZE, data));
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   onMousedown(event) {
     if (shouldResize(event)) {
-      resizeHandler(this.$root, event);
+      this.resizeTable(event);
     } else if (isCell(event)) {
       const $target = $(event.target);
       if (event.shiftKey) {
@@ -52,7 +72,7 @@ export class Table extends ExcelComponent {
             .map((id) => this.$root.find(`[data-id="${id}"]`));
         this.selection.selectGroup(cells);
       } else {
-        this.selection.select($target);
+        this.selectCell($target);
       }
     }
   }
@@ -82,7 +102,14 @@ export class Table extends ExcelComponent {
   }
 
   onInput(event) {
-    this.$emit('table:input', $(event.target));
+    this.updateTextInSore($(event.target).text());
+  }
+
+  updateTextInSore(value) {
+    this.$dispatch(actions.changeText({
+      id: this.selection.current.id(),
+      value,
+    }));
   }
 }
 

@@ -82,7 +82,7 @@ class Dom {
   }
 
   get data() {
-    return this.$el.dataset.id;
+    return this.$el.dataset;
   }
 
   id(parse) {
@@ -93,7 +93,7 @@ class Dom {
         col: +parsed[1],
       };
     }
-    return this.data;
+    return this.data.id;
   }
 }
 
